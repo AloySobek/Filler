@@ -10,31 +10,60 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME				=: elon_mask.filler
+NAME				:= elon_mask.filler
 
-SOURCE_DIR			=: source
-INCLUDE_DIR			=: include
-PRINTF_DIR			=: ft_printf
-LIBFT_DIR			=: libft
-BIN_DIR				=: bin
+SOURCE_DIR			:= source/
+INCLUDE_DIR			:= include/
+PRINTF_DIR			:= ft_printf/
+LIBFT_DIR			:= libft/
+BIN_DIR				:= bin/
 
-SOURCE				=: fi_main.c
+SOURCE				:= fi_main.c
 
-INCLUDE				=: filler.h
+INCLUDE				:= filler.h
 
-OBJ					=: $(SOURCE:.c=.o)
-OBJ_WITH_DIR		=: $(addprefix $(BIN_DIR), $(OBJ))
+OBJ					:= $(SOURCE:.c=.o)
+OBJ_WITH_DIR		:= $(addprefix $(BIN_DIR), $(OBJ))
 
-FLAGS				=: -O3 -Wall -Wextra -Werror
+FLAGS				:= -O3 -Wall -Wextra -Werror
 
 vpath %.c $(SOURCE_DIR)
 vpath %.h $(INCLUDE_DIR)
 vpath %.o $(BIN_DIR)
 vpath %.a $(PRINTF_DIR) $(LIBFT_DIR)
 
-$PRINTF				=: libftprintf.a
-$LIBFT				=: libft.a
+PRINTF				:= libftprintf.a
+LIBFT				:= libft.a
 
 all: $(NAME)
 
-$(NAME): $(OBJ) $(L)
+$(NAME): $(OBJ) $(LIBFT) $(PRINTF)
+	gcc $(FLAGS) $(OBJ_WITH_DIR) -o $@ $(LIBFT_DIR)$(LIBFT) $(PRINTF_DIR)$(PRINTF)
+
+$(OBJ):%.o:%.c $(INCLUDE) | $(BIN_DIR)
+	gcc $(FLAGS) -I $(LIBFT_DIR)includes -I $(PRINTF_DIR)includes -I $(INCLUDE_DIR) -c $< -o $(BIN_DIR)$@
+
+$(BIN_DIR):
+	mkdir -p $@
+
+$(LIBFT):
+	make -C $(LIBFT_DIR)
+
+$(PRINTF):
+	make -C $(PRINTF_DIR)
+
+clean:
+	rm -rf $(OBJ_WITH_DIR)
+	rm -rf $(BIN_DIR)
+	make -C $(LIBFT_DIR) clean
+	make -C $(PRINTF_DIR) clean
+
+fclean: clean
+	rm -rf $(NAME)
+	make -C $(LIBFT_DIR) fclean
+	make -C $(PRINTF_DIR) fclean
+
+re: fclean all
+
+.PHONY: clean fclean re
+.SILENT: all $(NAME) $(OBJ) $(BIN_DIR) $(LIBFT) $(PRINTF) clean fclean re;
