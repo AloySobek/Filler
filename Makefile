@@ -6,7 +6,7 @@
 #    By: vrichese <vrichese@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/11/15 00:40:25 by vrichese          #+#    #+#              #
-#    Updated: 2019/11/15 00:40:25 by vrichese         ###   ########.fr        #
+#    Updated: 2019/11/29 15:29:05 by vrichese         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,33 +15,38 @@ NAME				:= elon_mask.filler
 SOURCE_DIR			:= source/
 INCLUDE_DIR			:= include/
 PRINTF_DIR			:= ft_printf/
-LIBFT_DIR			:= libft/
+GNL_DIR				:= get_next_line/
+LIBFT_DIR			:= $(GNL_DIR)libft/
 BIN_DIR				:= bin/
 
-SOURCE				:= fi_main.c
+SOURCE				:= fi_main.cpp
 
-INCLUDE				:= filler.h
+INCLUDE				:= filler.hpp
 
-OBJ					:= $(SOURCE:.c=.o)
+OBJ					:= $(SOURCE:.cpp=.o)
 OBJ_WITH_DIR		:= $(addprefix $(BIN_DIR), $(OBJ))
 
-FLAGS				:= -O3 -Wall -Wextra -Werror
+COMPILER			:= g++
 
-vpath %.c $(SOURCE_DIR)
-vpath %.h $(INCLUDE_DIR)
+FLAGS				:= -std=c++14 -Wall -Wextra -Werror
+
+vpath %.cpp $(SOURCE_DIR)
+vpath %.cpp $(GNL_DIR)source
+vpath %.hpp $(INCLUDE_DIR)
 vpath %.o $(BIN_DIR)
 vpath %.a $(PRINTF_DIR) $(LIBFT_DIR)
 
 PRINTF				:= libftprintf.a
 LIBFT				:= libft.a
+GET_NEXT_LINE		:= get_next_line.c
 
 all: $(NAME)
 
-$(NAME): $(OBJ) $(LIBFT) $(PRINTF)
-	gcc $(FLAGS) $(OBJ_WITH_DIR) -o $@ $(LIBFT_DIR)$(LIBFT) $(PRINTF_DIR)$(PRINTF)
+$(NAME): $(OBJ)
+	$(COMPILER) $(FLAGS) $(OBJ_WITH_DIR) -o $@
 
-$(OBJ):%.o:%.c $(INCLUDE) | $(BIN_DIR)
-	gcc $(FLAGS) -I $(LIBFT_DIR)includes -I $(PRINTF_DIR)includes -I $(INCLUDE_DIR) -c $< -o $(BIN_DIR)$@
+$(OBJ):%.o:%.cpp $(INCLUDE) | $(BIN_DIR)
+	$(COMPILER) $(FLAGS) -I $(INCLUDE_DIR) -c $< -o $(BIN_DIR)$@
 
 $(BIN_DIR):
 	mkdir -p $@
@@ -66,4 +71,4 @@ fclean: clean
 re: fclean all
 
 .PHONY: clean fclean re
-.SILENT: all $(NAME) $(OBJ) $(BIN_DIR) $(LIBFT) $(PRINTF) clean fclean re;
+#.SILENT: all $(NAME) $(OBJ) $(BIN_DIR) $(LIBFT) $(PRINTF) clean fclean re;
